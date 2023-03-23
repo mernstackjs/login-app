@@ -23,13 +23,20 @@ userController.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email }).select(" +password");
-    if (!user) return res.send("user is not exit");
-    const isMatched = await user.isMatchedPassword(password);
-    if (!isMatched) return res.send("user is password is wrong");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await user.isMatchedPassword(password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
     const token = jwt.sign({ id: user._id }, process.env.SECRET_URL, {
       expiresIn: "1hr",
     });
-    res.json({ user, token });
+    const { password: pass, ...others } = user._doc;
+    res.json({ others, token });
   } catch (error) {
     res.json({ message: error });
   }
