@@ -11,7 +11,7 @@ userController.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   try {
     const isExit = await User.findOne({ email });
-    if (!isExit) return res.send("user is already is exit");
+    if (isExit) return res.send("user is already is exit");
     if (password.length < 6) return res.send("password is less then 6");
     const user = await User.create({ username, email, password });
     res.json({ user });
@@ -24,6 +24,8 @@ userController.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email }).select(" +password");
     if (!user) return res.send("user is not exit");
+    const isMatched = await user.isMatchedPassword(password);
+    if (!isMatched) return res.send("user is password is wrong");
     const token = jwt.sign({ id: user._id }, process.env.SECRET_URL, {
       expiresIn: "1hr",
     });
