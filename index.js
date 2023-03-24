@@ -6,9 +6,9 @@ const cors = require("cors");
 const userController = require("./controller/user");
 const { connectDB } = require("./config/db");
 
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use("/api/auth", userController);
 app.get("/", (req, res) => {
