@@ -5,12 +5,14 @@ const app = express();
 const cors = require("cors");
 const userController = require("./controller/user");
 const { connectDB } = require("./config/db");
+const productController = require("./controller/Products");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use("/api/auth", userController);
+app.use("/", productController);
 app.get("/", (req, res) => {
   res.send("API is running on port");
 });
